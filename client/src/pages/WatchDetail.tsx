@@ -114,10 +114,10 @@ export default function WatchDetail() {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Header */}
-            <div>
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h1 className="text-4xl font-bold mb-2">{watch.name}</h1>
+              <div>
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h1 className="text-4xl font-bold mb-2">{watch.name || watch.referenceNumber || `手表 #${watch.id}`}</h1>
                   <div className="flex flex-wrap gap-2">
                     <Badge variant="default" className="text-base">
                       {watch.brand}

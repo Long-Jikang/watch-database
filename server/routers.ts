@@ -3,10 +3,12 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
+import { apiRouter } from "./apiRouter";
 import * as db from "./db";
 
 export const appRouter = router({
   system: systemRouter,
+  api: apiRouter,
 
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),

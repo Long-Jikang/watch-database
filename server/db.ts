@@ -272,10 +272,10 @@ export async function getBrands() {
   const results = await db
     .selectDistinct({ brand: watches.brand })
     .from(watches)
-    .where(sql`${watches.brand} IS NOT NULL`)
+    .where(sql`${watches.brand} IS NOT NULL AND ${watches.brand} != ''`)
     .orderBy(asc(watches.brand));
 
-  return results.map(r => r.brand);
+  return results.map(r => r.brand).filter(b => b && b.trim().length > 0);
 }
 
 export async function getCaseMaterials() {
@@ -287,10 +287,10 @@ export async function getCaseMaterials() {
   const results = await db
     .selectDistinct({ material: watches.caseMaterial })
     .from(watches)
-    .where(sql`${watches.caseMaterial} IS NOT NULL`)
+    .where(sql`${watches.caseMaterial} IS NOT NULL AND ${watches.caseMaterial} != ''`)
     .orderBy(asc(watches.caseMaterial));
 
-  return results.map(r => r.material);
+  return results.map(r => r.material).filter(m => m && m.trim().length > 0);
 }
 
 export async function getMovementTypes() {
@@ -302,10 +302,10 @@ export async function getMovementTypes() {
   const results = await db
     .selectDistinct({ type: watches.movementType })
     .from(watches)
-    .where(sql`${watches.movementType} IS NOT NULL`)
+    .where(sql`${watches.movementType} IS NOT NULL AND ${watches.movementType} != ''`)
     .orderBy(asc(watches.movementType));
 
-  return results.map(r => r.type);
+  return results.map(r => r.type).filter(t => t && t.trim().length > 0);
 }
 
 // User watchlist functions

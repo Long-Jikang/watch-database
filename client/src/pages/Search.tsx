@@ -11,9 +11,9 @@ import { trpc } from "@/lib/trpc";
 
 export default function Search() {
   const [query, setQuery] = useState("");
-  const [brand, setBrand] = useState<string>("");
-  const [caseMaterial, setCaseMaterial] = useState<string>("");
-  const [movementType, setMovementType] = useState<string>("");
+  const [brand, setBrand] = useState<string>("all");
+  const [caseMaterial, setCaseMaterial] = useState<string>("all");
+  const [movementType, setMovementType] = useState<string>("all");
   const [page, setPage] = useState(0);
   const limit = 20;
 
@@ -23,9 +23,9 @@ export default function Search() {
 
   const { data: searchResults, isLoading } = trpc.watches.search.useQuery({
     query: query || undefined,
-    brand: brand || undefined,
-    caseMaterial: caseMaterial || undefined,
-    movementType: movementType || undefined,
+    brand: brand && brand !== "all" ? brand : undefined,
+    caseMaterial: caseMaterial && caseMaterial !== "all" ? caseMaterial : undefined,
+    movementType: movementType && movementType !== "all" ? movementType : undefined,
     limit,
     offset: page * limit,
     sortBy: 'name',
@@ -42,13 +42,13 @@ export default function Search() {
 
   const clearFilters = () => {
     setQuery("");
-    setBrand("");
-    setCaseMaterial("");
-    setMovementType("");
+    setBrand("all");
+    setCaseMaterial("all");
+    setMovementType("all");
     setPage(0);
   };
 
-  const hasActiveFilters = query || brand || caseMaterial || movementType;
+  const hasActiveFilters = query || (brand && brand !== "all") || (caseMaterial && caseMaterial !== "all") || (movementType && movementType !== "all");
 
   return (
     <div className="min-h-screen bg-background">
@@ -108,7 +108,7 @@ export default function Search() {
                       <SelectValue placeholder="选择品牌" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">全部品牌</SelectItem>
+                      <SelectItem value="all">全部品牌</SelectItem>
                       {brandsData?.slice(0, 50).map((b) => (
                         <SelectItem key={b} value={b}>
                           {b}
@@ -126,7 +126,7 @@ export default function Search() {
                       <SelectValue placeholder="选择材质" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">全部材质</SelectItem>
+                      <SelectItem value="all">全部材质</SelectItem>
                       {materialsData?.slice(0, 30).map((m) => m && (
                         <SelectItem key={m} value={m}>
                           {m}
@@ -144,7 +144,7 @@ export default function Search() {
                       <SelectValue placeholder="选择机芯" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">全部类型</SelectItem>
+                      <SelectItem value="all">全部类型</SelectItem>
                       {movementTypesData?.map((t) => t && (
                         <SelectItem key={t} value={t}>
                           {t}
@@ -194,10 +194,10 @@ export default function Search() {
                       <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
                         <CardHeader>
                           <CardTitle className="text-lg line-clamp-2">
-                            {watch.name}
+                            {watch.name || watch.referenceNumber || `手表 #${watch.id}`}
                           </CardTitle>
                           <CardDescription className="flex flex-wrap gap-2">
-                            <Badge variant="secondary">{watch.brand}</Badge>
+                            <Badge variant="secondary">{watch.brand || '未知品牌'}</Badge>
                             {watch.referenceNumber && (
                               <Badge variant="outline">{watch.referenceNumber}</Badge>
                             )}

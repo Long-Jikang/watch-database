@@ -25,15 +25,15 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/search">
-              <Button size="lg" className="w-full sm:w-auto">
-                <Search className="mr-2 h-5 w-5" />
+              <Button size="lg" className="gap-2">
+                <Search className="w-5 h-5" />
                 开始搜索
               </Button>
             </Link>
-            <Link href="/browse">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto">
-                <Database className="mr-2 h-5 w-5" />
-                浏览数据库
+            <Link href="/gallery">
+              <Button size="lg" variant="outline" className="gap-2">
+                <Database className="w-5 h-5" />
+                手表图库
               </Button>
             </Link>
           </div>

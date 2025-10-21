@@ -30,7 +30,7 @@ db_config = {
 
 # 图片目录
 KAGGLE_IMAGES_DIR = "/home/ubuntu/watches/watches/images"
-METADATA_FILE = "/home/ubuntu/watches/watches/metadata.csv"
+METADATA_FILE = '/tmp/test_metadata.csv'
 
 def upload_to_s3(image_path, s3_key):
     """使用 manus-upload-file 上传图片到 S3"""

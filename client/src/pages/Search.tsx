@@ -191,7 +191,17 @@ export default function Search() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {searchResults.watches.map((watch) => (
                     <Link key={watch.id} href={`/watch/${watch.id}`}>
-                      <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+                      <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full overflow-hidden">
+                        {/* 手表图片 */}
+                        <div className="aspect-[4/5] bg-muted relative overflow-hidden">
+                          <img
+                            src={watch.imageUrl || `https://placehold.co/400x500/1e40af/white?text=${encodeURIComponent(watch.brand || 'Watch')}`}
+                            alt={watch.name || watch.brand || 'Watch'}
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                            loading="lazy"
+                          />
+                        </div>
+                        
                         <CardHeader>
                           <CardTitle className="text-lg line-clamp-2">
                             {watch.name || watch.referenceNumber || `手表 #${watch.id}`}

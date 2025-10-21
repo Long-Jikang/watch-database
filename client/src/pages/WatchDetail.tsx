@@ -111,6 +111,19 @@ export default function WatchDetail() {
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* 手表图片 */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-8">
+              <div className="aspect-[4/5] bg-muted rounded-lg overflow-hidden shadow-lg">
+                <img
+                  src={data.watch.imageUrl || `https://placehold.co/400x600/1e40af/white?text=${encodeURIComponent(data.watch.brand || 'Watch')}`}
+                  alt={data.watch.name || data.watch.brand || 'Watch'}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+          </div>
+          
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Header */}

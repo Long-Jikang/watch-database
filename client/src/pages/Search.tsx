@@ -188,21 +188,27 @@ export default function Search() {
               </div>
             ) : searchResults && searchResults.watches.length > 0 ? (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {searchResults.watches.map((watch) => (
                     <Link key={watch.id} href={`/watch/${watch.id}`}>
-                      <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full overflow-hidden">
+                      <Card className="group hover:shadow-xl transition-all duration-300 cursor-pointer h-full overflow-hidden border-0 shadow-md">
                         {/* 手表图片 */}
-                        <div className="aspect-[4/5] bg-muted relative overflow-hidden">
-                          <img
-                            src={watch.imageUrl || `https://placehold.co/400x500/1e40af/white?text=${encodeURIComponent(watch.brand || 'Watch')}`}
-                            alt={watch.name || watch.brand || 'Watch'}
-                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                            loading="lazy"
-                          />
+                        <div className="aspect-square bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 relative overflow-hidden">
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="text-center space-y-3 p-6">
+                              <div className="text-4xl font-bold text-slate-300 dark:text-slate-600">
+                                {watch.brand?.charAt(0) || 'W'}
+                              </div>
+                              <div className="text-sm font-medium text-slate-400 dark:text-slate-500">
+                                {watch.brand || 'Watch'}
+                              </div>
+                            </div>
+                          </div>
+                          {/* 悬停效果 */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
                         
-                        <CardHeader>
+                        <CardHeader className="space-y-2">
                           <CardTitle className="text-lg line-clamp-2">
                             {watch.name || watch.referenceNumber || `手表 #${watch.id}`}
                           </CardTitle>
@@ -213,30 +219,30 @@ export default function Search() {
                             )}
                           </CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-2">
-                          <div className="grid grid-cols-2 gap-2 text-sm">
+                        <CardContent className="space-y-3 pb-4">
+                          <div className="grid grid-cols-2 gap-3 text-sm">
                             {watch.caseMaterial && (
-                              <div>
-                                <span className="text-muted-foreground">材质: </span>
-                                <span className="font-medium">{watch.caseMaterial}</span>
+                              <div className="flex flex-col">
+                                <span className="text-xs text-muted-foreground mb-0.5">材质</span>
+                                <span className="font-medium text-sm">{watch.caseMaterial}</span>
                               </div>
                             )}
                             {watch.caseDiameterMm && (
-                              <div>
-                                <span className="text-muted-foreground">直径: </span>
-                                <span className="font-medium">{watch.caseDiameterMm.toString()}mm</span>
+                              <div className="flex flex-col">
+                                <span className="text-xs text-muted-foreground mb-0.5">直径</span>
+                                <span className="font-medium text-sm">{watch.caseDiameterMm.toString()}mm</span>
                               </div>
                             )}
                             {watch.movementType && (
-                              <div>
-                                <span className="text-muted-foreground">机芯: </span>
-                                <span className="font-medium">{watch.movementType}</span>
+                              <div className="flex flex-col">
+                                <span className="text-xs text-muted-foreground mb-0.5">机芯</span>
+                                <span className="font-medium text-sm">{watch.movementType}</span>
                               </div>
                             )}
                             {watch.waterResistanceM && (
-                              <div>
-                                <span className="text-muted-foreground">防水: </span>
-                                <span className="font-medium">{watch.waterResistanceM}m</span>
+                              <div className="flex flex-col">
+                                <span className="text-xs text-muted-foreground mb-0.5">防水</span>
+                                <span className="font-medium text-sm">{watch.waterResistanceM}m</span>
                               </div>
                             )}
                           </div>

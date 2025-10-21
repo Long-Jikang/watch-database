@@ -114,12 +114,22 @@ export default function WatchDetail() {
           {/* 手表图片 */}
           <div className="lg:col-span-1">
             <div className="sticky top-8">
-              <div className="aspect-[4/5] bg-muted rounded-lg overflow-hidden shadow-lg">
-                <img
-                  src={data.watch.imageUrl || `https://placehold.co/400x600/1e40af/white?text=${encodeURIComponent(data.watch.brand || 'Watch')}`}
-                  alt={data.watch.name || data.watch.brand || 'Watch'}
-                  className="w-full h-full object-cover"
-                />
+              <div className="aspect-[4/5] bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 rounded-xl overflow-hidden shadow-xl border border-slate-200 dark:border-slate-700">
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="text-center space-y-4 p-8">
+                    <div className="text-6xl font-bold text-slate-200 dark:text-slate-700">
+                      {data.watch.brand?.charAt(0) || 'W'}
+                    </div>
+                    <div className="text-lg font-semibold text-slate-400 dark:text-slate-500">
+                      {data.watch.brand || 'Watch'}
+                    </div>
+                    {data.watch.referenceNumber && (
+                      <div className="text-xs text-slate-400 dark:text-slate-600 font-mono">
+                        {data.watch.referenceNumber}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>

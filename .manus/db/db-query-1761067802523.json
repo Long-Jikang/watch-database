@@ -1,0 +1,19 @@
+{
+  "query": "SELECT COUNT(*) as watch_count FROM watches; SELECT COUNT(*) as feature_count FROM watchFeatures;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2GcmWNrjFCkHyv8.root --database bGip5ExDhxSbhhzMjm68M2 --execute SELECT COUNT(*) as watch_count FROM watches; SELECT COUNT(*) as feature_count FROM watchFeatures;",
+  "rows": [
+    {
+      "watch_count": "39050"
+    },
+    {
+      "watch_count": "feature_count"
+    },
+    {
+      "watch_count": "222961"
+    }
+  ],
+  "messages": [],
+  "stdout": "watch_count\n39050\nfeature_count\n222961\n",
+  "stderr": "",
+  "execution_time_ms": 1904
+}

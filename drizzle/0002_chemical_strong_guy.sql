@@ -1,0 +1,1 @@
+ALTER TABLE `watchFeatures` MODIFY COLUMN `featureValue` varchar(255) NOT NULL;

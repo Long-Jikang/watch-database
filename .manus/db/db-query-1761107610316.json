@@ -1,0 +1,42 @@
+{
+  "query": "SELECT brand, COUNT(*) as count \nFROM watches \nWHERE brand IN ('Audemars Piguet', 'Patek Philippe', 'Rolex', 'Vacheron Constantin', \n                'A. Lange & Söhne', 'Jaeger-LeCoultre', 'IWC', 'Omega', 'Cartier')\nGROUP BY brand\nORDER BY count DESC",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2GcmWNrjFCkHyv8.root --database bGip5ExDhxSbhhzMjm68M2 --execute SELECT brand, COUNT(*) as count \nFROM watches \nWHERE brand IN ('Audemars Piguet', 'Patek Philippe', 'Rolex', 'Vacheron Constantin', \n                'A. Lange & Söhne', 'Jaeger-LeCoultre', 'IWC', 'Omega', 'Cartier')\nGROUP BY brand\nORDER BY count DESC",
+  "rows": [
+    {
+      "brand": "Rolex",
+      "count": "3297"
+    },
+    {
+      "brand": "Omega",
+      "count": "3194"
+    },
+    {
+      "brand": "IWC",
+      "count": "1632"
+    },
+    {
+      "brand": "Audemars Piguet",
+      "count": "1369"
+    },
+    {
+      "brand": "Patek Philippe",
+      "count": "931"
+    },
+    {
+      "brand": "Jaeger-LeCoultre",
+      "count": "632"
+    },
+    {
+      "brand": "Cartier",
+      "count": "204"
+    },
+    {
+      "brand": "Vacheron Constantin",
+      "count": "61"
+    }
+  ],
+  "messages": [],
+  "stdout": "brand\tcount\nRolex\t3297\nOmega\t3194\nIWC\t1632\nAudemars Piguet\t1369\nPatek Philippe\t931\nJaeger-LeCoultre\t632\nCartier\t204\nVacheron Constantin\t61\n",
+  "stderr": "",
+  "execution_time_ms": 1560
+}

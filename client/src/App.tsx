@@ -8,12 +8,15 @@ import Home from "./pages/Home";
 import Gallery from "./pages/Gallery";
 import Search from "./pages/Search";
 import WatchDetail from "./pages/WatchDetail";
+import ImageManager from "./pages/ImageManager";
 
 function Router() {
   return (
     <Switch>
        <Route path={"/"} component={Home} />
       <Route path="/gallery" component={Gallery} />
+      <Route path="/search" component={Search} />
+      <Route path="/image-manager" component={ImageManager} />
       <Route path={"/404"} component={NotFound} />
       <Route path={"/watch/:id"} component={WatchDetail} />
       <Route path={"/404"} component={NotFound} />

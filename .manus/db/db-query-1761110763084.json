@@ -1,0 +1,130 @@
+{
+  "query": "\nSELECT id, brand, name, referenceNumber \nFROM watches \nWHERE brand IN ('Rolex', 'Audemars Piguet', 'Patek Philippe', 'Omega', 'IWC', 'Cartier')\nAND name IS NOT NULL \nAND name != ''\nORDER BY brand, id\nLIMIT 20\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2GcmWNrjFCkHyv8.root --database bGip5ExDhxSbhhzMjm68M2 --execute \nSELECT id, brand, name, referenceNumber \nFROM watches \nWHERE brand IN ('Rolex', 'Audemars Piguet', 'Patek Philippe', 'Omega', 'IWC', 'Cartier')\nAND name IS NOT NULL \nAND name != ''\nORDER BY brand, id\nLIMIT 20\n",
+  "rows": [
+    {
+      "id": "14",
+      "brand": "Audemars Piguet",
+      "name": "CODE 11:59 Flying Tourbillon Pink Gold / Sodalite",
+      "referenceNumber": "26665OR.OO.D349CR.01"
+    },
+    {
+      "id": "15",
+      "brand": "Audemars Piguet",
+      "name": "CODE 11:59 Flying Tourbillon White Gold / Ruby Root",
+      "referenceNumber": "26665BC.OO.D632CR.01"
+    },
+    {
+      "id": "16",
+      "brand": "Audemars Piguet",
+      "name": "CODE 11:59 Flying Tourbillon Yellow Gold / Malachite",
+      "referenceNumber": "26665BA.OO.D412CR.01"
+    },
+    {
+      "id": "17",
+      "brand": "Audemars Piguet",
+      "name": "CODE 11.59 Perpetual Calendar 38 Red Gold / Green",
+      "referenceNumber": "26441OR.OO.D405CR.01"
+    },
+    {
+      "id": "18",
+      "brand": "Audemars Piguet",
+      "name": "Royal Oak Perpetual Calendar 38 Pink Gold / Pink",
+      "referenceNumber": "26684OR.OO.1356OR.01"
+    },
+    {
+      "id": "19",
+      "brand": "Audemars Piguet",
+      "name": "Royal Oak Perpetual Calendar 38 Stainless Steel / Light Blue",
+      "referenceNumber": "26684ST.OO.1356ST.01"
+    },
+    {
+      "id": "762",
+      "brand": "Audemars Piguet",
+      "name": "(re)Master01 Stainless Steel / Pink Gold / Champagne",
+      "referenceNumber": "26595SR.OO.A032VE.01"
+    },
+    {
+      "id": "763",
+      "brand": "Audemars Piguet",
+      "name": "(re)Master02 Sand Gold / Blue",
+      "referenceNumber": "15240SG.OO.A347CR.01"
+    },
+    {
+      "id": "764",
+      "brand": "Audemars Piguet",
+      "name": "Pocket Watch 25712 Grande Complication Yellow Gold",
+      "referenceNumber": "25712BA.OO.0000XX.01"
+    },
+    {
+      "id": "765",
+      "brand": "Audemars Piguet",
+      "name": "Pocket Watch 25701 Grande Complication Pink Gold",
+      "referenceNumber": "25701OR.OO.000XX.03"
+    },
+    {
+      "id": "766",
+      "brand": "Audemars Piguet",
+      "name": "CODE 11.59 Grande Sonnerie Carillon Supersonnerie Platinum - White Gold / Skeleton /150th Anniversary",
+      "referenceNumber": "26397PN.OO.D008KB.01"
+    },
+    {
+      "id": "767",
+      "brand": "Audemars Piguet",
+      "name": "CODE 11.59 Tourbillon Openworked White Gold / Pink Gold / Grey",
+      "referenceNumber": "26600CR.OO.D009KB.01"
+    },
+    {
+      "id": "768",
+      "brand": "Audemars Piguet",
+      "name": "CODE 11.59 Chronograph Selfwinding White Gold / Rose Gold / Grey",
+      "referenceNumber": "26393CR.OO.A002CR.01"
+    },
+    {
+      "id": "769",
+      "brand": "Audemars Piguet",
+      "name": "CODE 11.59 Tourbillon Selfwinding Ceramic - Stainless Steel / Meteorite - Eastern Arabic",
+      "referenceNumber": "26396QT.OO.D009KB.01"
+    },
+    {
+      "id": "770",
+      "brand": "Audemars Piguet",
+      "name": "CODE 11.59 Tourbillon Selfwinding White Gold / Sodalite",
+      "referenceNumber": "26396BC.OO.D349KB.01"
+    },
+    {
+      "id": "771",
+      "brand": "Audemars Piguet",
+      "name": "CODE 11.59 Starwheel White Gold / Ceramic / Aventurine",
+      "referenceNumber": "15212NB.OO.A002KB.01-AB"
+    },
+    {
+      "id": "772",
+      "brand": "Audemars Piguet",
+      "name": "CODE 11.59 Perpetual Calendar White Gold / Smoked Blue",
+      "referenceNumber": "26494BC.OO.D350KB.01"
+    },
+    {
+      "id": "773",
+      "brand": "Audemars Piguet",
+      "name": "CODE 11.59 Chronograph Selfwinding Blue Ceramic - White Gold / Tuscany Blue",
+      "referenceNumber": "26439NB.OO.A346KB.01"
+    },
+    {
+      "id": "774",
+      "brand": "Audemars Piguet",
+      "name": "CODE 11.59 Automatic White Gold / Black",
+      "referenceNumber": "15210BC.OO.A002CR.01"
+    },
+    {
+      "id": "775",
+      "brand": "Audemars Piguet",
+      "name": "CODE 11.59 Automatic Stainless Steel - Ceramic / Beige / Fabric",
+      "referenceNumber": "15210QT.OO.A064KB.01"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tbrand\tname\treferenceNumber\n14\tAudemars Piguet\tCODE 11:59 Flying Tourbillon Pink Gold / Sodalite\t26665OR.OO.D349CR.01\n15\tAudemars Piguet\tCODE 11:59 Flying Tourbillon White Gold / Ruby Root\t26665BC.OO.D632CR.01\n16\tAudemars Piguet\tCODE 11:59 Flying Tourbillon Yellow Gold / Malachite\t26665BA.OO.D412CR.01\n17\tAudemars Piguet\tCODE 11.59 Perpetual Calendar 38 Red Gold / Green\t26441OR.OO.D405CR.01\n18\tAudemars Piguet\tRoyal Oak Perpetual Calendar 38 Pink Gold / Pink\t26684OR.OO.1356OR.01\n19\tAudemars Piguet\tRoyal Oak Perpetual Calendar 38 Stainless Steel / Light Blue\t26684ST.OO.1356ST.01\n762\tAudemars Piguet\t(re)Master01 Stainless Steel / Pink Gold / Champagne\t26595SR.OO.A032VE.01\n763\tAudemars Piguet\t(re)Master02 Sand Gold / Blue\t15240SG.OO.A347CR.01\n764\tAudemars Piguet\tPocket Watch 25712 Grande Complication Yellow Gold\t25712BA.OO.0000XX.01\n765\tAudemars Piguet\tPocket Watch 25701 Grande Complication Pink Gold\t25701OR.OO.000XX.03\n766\tAudemars Piguet\tCODE 11.59 Grande Sonnerie Carillon Supersonnerie Platinum - White Gold / Skeleton /150th Anniversary\t26397PN.OO.D008KB.01\n767\tAudemars Piguet\tCODE 11.59 Tourbillon Openworked White Gold / Pink Gold / Grey\t26600CR.OO.D009KB.01\n768\tAudemars Piguet\tCODE 11.59 Chronograph Selfwinding White Gold / Rose Gold / Grey\t26393CR.OO.A002CR.01\n769\tAudemars Piguet\tCODE 11.59 Tourbillon Selfwinding Ceramic - Stainless Steel / Meteorite - Eastern Arabic\t26396QT.OO.D009KB.01\n770\tAudemars Piguet\tCODE 11.59 Tourbillon Selfwinding White Gold / Sodalite\t26396BC.OO.D349KB.01\n771\tAudemars Piguet\tCODE 11.59 Starwheel White Gold / Ceramic / Aventurine\t15212NB.OO.A002KB.01-AB\n772\tAudemars Piguet\tCODE 11.59 Perpetual Calendar White Gold / Smoked Blue\t26494BC.OO.D350KB.01\n773\tAudemars Piguet\tCODE 11.59 Chronograph Selfwinding Blue Ceramic - White Gold / Tuscany Blue\t26439NB.OO.A346KB.01\n774\tAudemars Piguet\tCODE 11.59 Automatic White Gold / Black\t15210BC.OO.A002CR.01\n775\tAudemars Piguet\tCODE 11.59 Automatic Stainless Steel - Ceramic / Beige / Fabric\t15210QT.OO.A064KB.01\n",
+  "stderr": "",
+  "execution_time_ms": 2421
+}

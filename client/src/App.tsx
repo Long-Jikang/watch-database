@@ -6,6 +6,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import Gallery from "./pages/Gallery";
+import LuxuryWatches from "./pages/LuxuryWatches";
 import Search from "./pages/Search";
 import WatchDetail from "./pages/WatchDetail";
 import ImageManager from "./pages/ImageManager";
@@ -13,8 +14,9 @@ import ImageManager from "./pages/ImageManager";
 function Router() {
   return (
     <Switch>
-       <Route path={"/"} component={Home} />
-      <Route path="/gallery" component={Gallery} />
+      <Route path={"/"} component={Home} />
+      <Route path={"/gallery"} component={Gallery} />
+      <Route path={"/luxury"} component={LuxuryWatches} />
       <Route path="/search" component={Search} />
       <Route path="/image-manager" component={ImageManager} />
       <Route path={"/404"} component={NotFound} />

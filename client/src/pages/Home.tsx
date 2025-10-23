@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Search, Database, TrendingUp, Heart } from "lucide-react";
+import { Search, Database, TrendingUp, Heart, Crown } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
 export default function Home() {
@@ -28,6 +28,12 @@ export default function Home() {
               <Button size="lg" className="gap-2">
                 <Search className="w-5 h-5" />
                 开始搜索
+              </Button>
+            </Link>
+            <Link href="/luxury">
+              <Button size="lg" variant="outline" className="gap-2">
+                <Crown className="w-5 h-5" />
+                顶级腕表
               </Button>
             </Link>
             <Link href="/gallery">

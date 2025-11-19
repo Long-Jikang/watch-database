@@ -34,7 +34,7 @@ export default function WatchImage({
             // 图片加载失败时显示品牌首字母
             e.currentTarget.style.display = 'none';
             const fallback = e.currentTarget.parentElement?.querySelector('.image-fallback');
-            if (fallback) fallback.style.display = 'flex';
+            if (fallback) (fallback as HTMLElement).style.display = 'flex';
           }}
         />
       ) : (

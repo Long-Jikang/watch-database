@@ -1,9 +1,9 @@
 import { drizzle } from "drizzle-orm/mysql2";
 import * as fs from "fs";
 import * as path from "path";
-import { watches, watchFeatures, InsertWatch, InsertWatchFeature } from "../drizzle/schema";
+import { watches, watchFeatures, InsertWatch, InsertWatchFeature } from "../drizzle/schema.ts";
 
-const CSV_FILE_PATH = "/tmp/watch_sample.csv";
+const CSV_FILE_PATH = path.join(__dirname, "../data/watch_sample.csv");
 const BATCH_SIZE = 100;
 
 interface CSVRow {
@@ -102,6 +102,13 @@ async function importData() {
 
   const db = drizzle(process.env.DATABASE_URL);
   
+  // Check if CSV file exists
+  if (!fs.existsSync(CSV_FILE_PATH)) {
+    console.warn(`CSV file not found at ${CSV_FILE_PATH}. Please ensure the file exists.`);
+    console.log("Skipping data import as no CSV file is available.");
+    return;
+  }
+
   // Read CSV file
   const csvContent = fs.readFileSync(CSV_FILE_PATH, "utf-8");
   const lines = csvContent.split("\n");
@@ -210,7 +217,8 @@ async function importData() {
       
       // Store features index to associate with watch later
       if (features.length > 0) {
-        featureBatch.push({ watchId: watchBatch.length - 1, features }); // Index in current batch
+        featureBatch.push({ watchId: watchBatch.length - 1, features }); // 当前批次中的索引
+
       }
       
       // Insert batch when reaching BATCH_SIZE
@@ -252,7 +260,8 @@ async function insertBatch(
   const insertedWatches = await db.insert(watches).values(watchBatch);
   
   // Get the starting ID of inserted watches
-  const startId = Number(insertedWatches.insertId);
+  // 使用 drizzle 的 insert 返回结果，获取插入的起始 ID
+  const startId = Number((insertedWatches as any).insertId);
   
   // Prepare all features with correct watchId
   const allFeatures: Omit<InsertWatchFeature, "id" | "createdAt">[] = [];

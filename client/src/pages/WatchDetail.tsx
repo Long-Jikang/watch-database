@@ -5,9 +5,80 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Heart } from "lucide-react";
+import { ArrowLeft, Heart, Watch, Settings, Diamond, Palette, DollarSign, Calendar, Shield, Zap, Eye, Clock } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
+
+// 参数分类配置
+const parameterCategories = [
+  {
+    key: "basic",
+    title: "基础信息",
+    icon: Watch,
+    fields: ["brand", "family", "name", "referenceNumber", "yearOfProduction", "isLimited", "limitedEditionSize"],
+    fieldLabels: {
+      brand: "品牌",
+      family: "系列",
+      name: "名称",
+      referenceNumber: "型号",
+      yearOfProduction: "生产年份",
+      isLimited: "限量版",
+      limitedEditionSize: "限量数量"
+    }
+  },
+  {
+    key: "movement",
+    title: "机芯规格",
+    icon: Settings,
+    fields: ["movementType", "movementCaliber", "movementFunctions"],
+    fieldLabels: {
+      movementType: "机芯类型",
+      movementCaliber: "机芯型号",
+      movementFunctions: "机芯功能"
+    }
+  },
+  {
+    key: "case",
+    title: "表壳规格",
+    icon: Diamond,
+    fields: ["caseMaterial", "caseDiameterMm", "caseThicknessMm", "waterResistanceM"],
+    fieldLabels: {
+      caseMaterial: "表壳材质",
+      caseDiameterMm: "表壳直径",
+      caseThicknessMm: "表壳厚度",
+      waterResistanceM: "防水深度"
+    }
+  },
+  {
+    key: "dial",
+    title: "表盘特征",
+    icon: Palette,
+    fields: ["dial_color", "indexes", "hands"],
+    fieldLabels: {
+      dial_color: "表盘颜色",
+      indexes: "时标类型",
+      hands: "指针类型"
+    }
+  },
+  {
+    key: "other",
+    title: "其他规格",
+    icon: Eye,
+    fields: ["glass", "back"],
+    fieldLabels: {
+      glass: "表镜材质",
+      back: "底盖类型"
+    }
+  }
+];
+
+// 价格信息配置
+const priceConfig = {
+  cny: { label: "人民币", symbol: "¥" },
+  hkd: { label: "港币", symbol: "HK$" },
+  usd: { label: "美元", symbol: "$" },
+  sgd: { label: "新加坡元", symbol: "S$" }
+};
 
 export default function WatchDetail() {
   const [, params] = useRoute("/watch/:id");
@@ -105,6 +176,105 @@ export default function WatchDetail() {
 
   const { watch } = data;
 
+  // 检查参数是否有值
+  const hasValue = (field: string) => {
+    const value = watch[field as keyof typeof watch];
+    return value !== null && value !== undefined && value !== "" && value !== 0;
+  };
+
+  // 格式化参数值
+  const formatValue = (field: string, value: any) => {
+    if (field === "caseDiameterMm" || field === "caseThicknessMm") {
+      return `${value} mm`;
+    }
+    if (field === "waterResistanceM") {
+      return `${value} 米`;
+    }
+    if (field === "isLimited") {
+      return value ? "是" : "否";
+    }
+    if (field === "limitedEditionSize") {
+      return `${value} 枚`;
+    }
+    return value;
+  };
+
+  // 渲染参数卡片
+  const renderParameterCard = (category: typeof parameterCategories[0]) => {
+    const hasData = category.fields.some(field => hasValue(field));
+    if (!hasData) return null;
+
+    const IconComponent = category.icon;
+
+    return (
+      <Card key={category.key} className="hover:shadow-lg transition-shadow duration-300">
+        <CardHeader className="pb-3">
+          <div className="flex items-center space-x-2">
+            <IconComponent className="h-5 w-5 text-primary" />
+            <CardTitle className="text-lg">{category.title}</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <div className="space-y-3">
+            {category.fields.map((field) => {
+              if (!hasValue(field)) return null;
+              
+              const value = watch[field as keyof typeof watch];
+              const label = category.fieldLabels[field as keyof typeof category.fieldLabels] || field;
+              
+              return (
+                <div key={field} className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-700 last:border-b-0">
+                  <span className="text-sm font-medium text-slate-600 dark:text-slate-400">{label}</span>
+                  <span className="text-sm font-semibold text-slate-900 dark:text-slate-100 text-right">
+                    {formatValue(field, value)}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  // 渲染价格卡片
+  const renderPriceCard = () => {
+    const hasPriceData = Object.keys(priceConfig).some(key => hasValue(key));
+    if (!hasPriceData) return null;
+
+    return (
+      <Card className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800/50 dark:to-slate-900/50 border-slate-200 dark:border-slate-700">
+        <CardHeader className="pb-3">
+          <div className="flex items-center space-x-2">
+            <DollarSign className="h-5 w-5 text-slate-700 dark:text-slate-300" />
+            <CardTitle className="text-lg">价格信息</CardTitle>
+          </div>
+          <CardDescription>市场参考价格</CardDescription>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {Object.entries(priceConfig).map(([key, config]) => {
+              if (!hasValue(key)) return null;
+              const value = watch[key as keyof typeof watch];
+              
+              return (
+                <div 
+                  key={key} 
+                  className="text-center p-3 bg-white/80 dark:bg-slate-800/80 rounded-lg border border-slate-200 dark:border-slate-600 backdrop-blur-sm transition-all duration-200 ease-out hover:scale-105 hover:bg-white/95 dark:hover:bg-slate-800/95 hover:shadow-lg hover:border-slate-300 dark:hover:border-slate-500 hover:shadow-slate-200/50 dark:hover:shadow-slate-700/50 transform-gpu cursor-pointer"
+                >
+                  <div className="text-xl font-bold text-slate-800 dark:text-slate-200 transition-colors duration-200 hover:text-slate-900 dark:hover:text-slate-100">
+                    {config.symbol}{typeof value === 'number' ? value.toLocaleString() : value}
+                  </div>
+                  <div className="text-xs text-slate-600 dark:text-slate-400 mt-1 transition-colors duration-200 hover:text-slate-700 dark:hover:text-slate-300">{config.label}</div>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container py-8">
@@ -138,7 +308,7 @@ export default function WatchDetail() {
                       // 图片加载失败时显示品牌首字母
                       e.currentTarget.style.display = 'none';
                       const fallback = e.currentTarget.parentElement?.querySelector('.image-fallback');
-                      if (fallback) fallback.style.display = 'flex';
+                      if (fallback) (fallback as HTMLElement).style.display = 'flex';
                     }}
                   />
                 ) : (
@@ -165,10 +335,10 @@ export default function WatchDetail() {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Header */}
-              <div>
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h1 className="text-4xl font-bold mb-2">{watch.name || watch.referenceNumber || `手表 #${watch.id}`}</h1>
+            <div>
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h1 className="text-4xl font-bold mb-2">{watch.name || watch.referenceNumber || `手表 #${watch.id}`}</h1>
                   <div className="flex flex-wrap gap-2">
                     <Badge variant="default" className="text-base">
                       {watch.brand}
@@ -203,176 +373,13 @@ export default function WatchDetail() {
               )}
             </div>
 
-            {/* 手表规格信息 */}
-            <Card>
-              <CardHeader>
-                <CardTitle>手表规格</CardTitle>
-                <CardDescription>详细技术参数</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* 基础信息 */}
-                  <div className="space-y-3">
-                    <h4 className="font-semibold text-sm text-muted-foreground">基础信息</h4>
-                    {watch.brand && (
-                      <div className="flex justify-between">
-                        <span className="text-sm">品牌</span>
-                        <span className="font-medium">{watch.brand}</span>
-                      </div>
-                    )}
-                    {watch.family && (
-                      <div className="flex justify-between">
-                        <span className="text-sm">系列</span>
-                        <span className="font-medium">{watch.family}</span>
-                      </div>
-                    )}
-                    {watch.name && (
-                      <div className="flex justify-between">
-                        <span className="text-sm">名称</span>
-                        <span className="font-medium">{watch.name}</span>
-                      </div>
-                    )}
-                    {watch.reference && (
-                      <div className="flex justify-between">
-                        <span className="text-sm">型号</span>
-                        <span className="font-medium font-mono">{watch.reference}</span>
-                      </div>
-                    )}
-                    {watch.limited && (
-                      <div className="flex justify-between">
-                        <span className="text-sm">限量版</span>
-                        <span className="font-medium">{watch.limited === 'Yes' ? '是' : watch.limited}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* 机芯信息 */}
-                  <div className="space-y-3">
-                    <h4 className="font-semibold text-sm text-muted-foreground">机芯</h4>
-                    {watch.movement_caliber && (
-                      <div className="flex justify-between">
-                        <span className="text-sm">机芯型号</span>
-                        <span className="font-medium">{watch.movement_caliber}</span>
-                      </div>
-                    )}
-                    {watch.movement_functions && (
-                      <div className="flex justify-between">
-                        <span className="text-sm">功能</span>
-                        <span className="font-medium text-right">{watch.movement_functions}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* 表壳信息 */}
-                  <div className="space-y-3">
-                    <h4 className="font-semibold text-sm text-muted-foreground">表壳</h4>
-                    {watch.case_material && (
-                      <div className="flex justify-between">
-                        <span className="text-sm">材质</span>
-                        <span className="font-medium">{watch.case_material}</span>
-                      </div>
-                    )}
-                    {watch.shape && (
-                      <div className="flex justify-between">
-                        <span className="text-sm">形状</span>
-                        <span className="font-medium">{watch.shape}</span>
-                      </div>
-                    )}
-                    {watch.diameter && (
-                      <div className="flex justify-between">
-                        <span className="text-sm">直径</span>
-                        <span className="font-medium">{watch.diameter}</span>
-                      </div>
-                    )}
-                    {watch.height && watch.height !== 'Bilgi Yok' && (
-                      <div className="flex justify-between">
-                        <span className="text-sm">高度</span>
-                        <span className="font-medium">{watch.height}</span>
-                      </div>
-                    )}
-                    {watch.wr && (
-                      <div className="flex justify-between">
-                        <span className="text-sm">防水深度</span>
-                        <span className="font-medium">{watch.wr}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* 其他规格 */}
-                  <div className="space-y-3">
-                    <h4 className="font-semibold text-sm text-muted-foreground">其他规格</h4>
-                    {watch.glass && (
-                      <div className="flex justify-between">
-                        <span className="text-sm">表镜</span>
-                        <span className="font-medium">{watch.glass}</span>
-                      </div>
-                    )}
-                    {watch.back && (
-                      <div className="flex justify-between">
-                        <span className="text-sm">表背</span>
-                        <span className="font-medium">{watch.back}</span>
-                      </div>
-                    )}
-                    {watch.dial_color && (
-                      <div className="flex justify-between">
-                        <span className="text-sm">表盘颜色</span>
-                        <span className="font-medium">{watch.dial_color}</span>
-                      </div>
-                    )}
-                    {watch.indexes && (
-                      <div className="flex justify-between">
-                        <span className="text-sm">时标</span>
-                        <span className="font-medium">{watch.indexes}</span>
-                      </div>
-                    )}
-                    {watch.hands && (
-                      <div className="flex justify-between">
-                        <span className="text-sm">指针</span>
-                        <span className="font-medium">{watch.hands}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            {/* 优化后的参数展示区域 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {parameterCategories.map(renderParameterCard)}
+            </div>
 
             {/* 价格信息 */}
-            {(watch.price_cny || watch.price_usd || watch.price_hkd || watch.price_sgd) && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>价格信息</CardTitle>
-                  <CardDescription>市场参考价格</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {watch.price_cny && (
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-primary">¥{watch.price_cny.toLocaleString()}</div>
-                        <div className="text-xs text-muted-foreground">人民币</div>
-                      </div>
-                    )}
-                    {watch.price_hkd && (
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-primary">HK${watch.price_hkd.toLocaleString()}</div>
-                        <div className="text-xs text-muted-foreground">港币</div>
-                      </div>
-                    )}
-                    {watch.price_usd && (
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-primary">${watch.price_usd.toLocaleString()}</div>
-                        <div className="text-xs text-muted-foreground">美元</div>
-                      </div>
-                    )}
-                    {watch.price_sgd && (
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-primary">S${watch.price_sgd.toLocaleString()}</div>
-                        <div className="text-xs text-muted-foreground">新加坡元</div>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+            {renderPriceCard()}
 
             {/* Description */}
             {watch.description && (
@@ -415,104 +422,6 @@ export default function WatchDetail() {
                 </CardContent>
               </Card>
             )}
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Specifications */}
-            <Card>
-              <CardHeader>
-                <CardTitle>技术规格</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {watch.movementType && (
-                  <div>
-                    <p className="text-sm text-muted-foreground">机芯类型</p>
-                    <p className="font-medium">{watch.movementType}</p>
-                  </div>
-                )}
-
-                {watch.movementCaliber && (
-                  <div>
-                    <p className="text-sm text-muted-foreground">机芯型号</p>
-                    <p className="font-medium">{watch.movementCaliber}</p>
-                  </div>
-                )}
-
-                <Separator />
-
-                {watch.caseMaterial && (
-                  <div>
-                    <p className="text-sm text-muted-foreground">表壳材质</p>
-                    <p className="font-medium">{watch.caseMaterial}</p>
-                  </div>
-                )}
-
-                {watch.caseDiameterMm && (
-                  <div>
-                    <p className="text-sm text-muted-foreground">表壳直径</p>
-                    <p className="font-medium">{watch.caseDiameterMm} mm</p>
-                  </div>
-                )}
-
-                {watch.caseThicknessMm && (
-                  <div>
-                    <p className="text-sm text-muted-foreground">表壳厚度</p>
-                    <p className="font-medium">{watch.caseThicknessMm} mm</p>
-                  </div>
-                )}
-
-                {watch.glass && (
-                  <div>
-                    <p className="text-sm text-muted-foreground">表镜材质</p>
-                    <p className="font-medium">{watch.glass}</p>
-                  </div>
-                )}
-
-                {watch.back && (
-                  <div>
-                    <p className="text-sm text-muted-foreground">底盖类型</p>
-                    <p className="font-medium">{watch.back}</p>
-                  </div>
-                )}
-
-                {watch.waterResistanceM && (
-                  <div>
-                    <p className="text-sm text-muted-foreground">防水深度</p>
-                    <p className="font-medium">{watch.waterResistanceM} 米</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Additional Info */}
-            <Card>
-              <CardHeader>
-                <CardTitle>其他信息</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {watch.yearOfProduction && (
-                  <div>
-                    <p className="text-sm text-muted-foreground">生产年份</p>
-                    <p className="font-medium">{watch.yearOfProduction}</p>
-                  </div>
-                )}
-
-                <div>
-                  <p className="text-sm text-muted-foreground">数据来源</p>
-                  <p className="font-medium capitalize">{watch.dataSource || "Unknown"}</p>
-                </div>
-
-                {watch.updatedAt && (
-                  <div>
-                    <p className="text-sm text-muted-foreground">最后更新</p>
-                    <p className="font-medium">
-                      {new Date(watch.updatedAt).toLocaleDateString("zh-CN")}
-                    </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
           </div>
         </div>
       </div>

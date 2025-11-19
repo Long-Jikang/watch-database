@@ -108,7 +108,7 @@ export const appRouter = router({
         // 如果file_name为空，返回默认图片URL
         if (!watch.file_name || watch.file_name.trim() === '') {
           return {
-            imageUrl: 'https://placehold.co/400x400?text=No+Image',
+            imageUrl: '/api/images/DefaultWatch.png',
             exists: false
           };
         }
@@ -128,7 +128,7 @@ export const appRouter = router({
         } else {
           // 如果生成签名URL失败，返回默认图片
           return {
-            imageUrl: 'https://placehold.co/400x400?text=No+Image',
+            imageUrl: '/api/images/DefaultWatch.png',
             exists: false
           };
         }

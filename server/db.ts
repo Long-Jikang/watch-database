@@ -1,6 +1,7 @@
-import { eq, and, like, or, sql, desc, asc, inArray } from "drizzle-orm";
+import { eq, and, like, or, sql, desc, asc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, watches, watchFeatures, marketPrices, userWatchlist, Watch } from "../drizzle/schema";
+import { InsertUser, users, watchFeatures, marketPrices } from "../drizzle/schema";
+import { watchCatalog, WatchCatalog } from "../drizzle/watch_catalog_schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -130,57 +131,38 @@ export async function searchWatches(params: WatchSearchParams) {
   if (query) {
     conditions.push(
       or(
-        like(watches.name, `%${query}%`),
-        like(watches.brand, `%${query}%`),
-        like(watches.referenceNumber, `%${query}%`)
+        like(watchCatalog.name, `%${query}%`),
+        like(watchCatalog.brand, `%${query}%`),
+        like(watchCatalog.reference, `%${query}%`)
       )
     );
   }
 
   if (brand) {
-    conditions.push(eq(watches.brand, brand));
+    conditions.push(eq(watchCatalog.brand, brand));
   }
 
   if (family) {
-    conditions.push(eq(watches.family, family));
+    conditions.push(eq(watchCatalog.family, family));
   }
 
   if (caseMaterial) {
-    conditions.push(eq(watches.caseMaterial, caseMaterial));
+    conditions.push(eq(watchCatalog.case_material, caseMaterial));
   }
 
   if (movementType) {
-    conditions.push(eq(watches.movementType, movementType));
+    conditions.push(eq(watchCatalog.movement_caliber, movementType));
   }
 
   if (diameterMin !== undefined) {
-    conditions.push(sql`CAST(${watches.caseDiameterMm} AS DECIMAL) >= ${diameterMin}`);
+    conditions.push(sql`CAST(${watchCatalog.diameter} AS DECIMAL) >= ${diameterMin}`);
   }
 
   if (diameterMax !== undefined) {
-    conditions.push(sql`CAST(${watches.caseDiameterMm} AS DECIMAL) <= ${diameterMax}`);
+    conditions.push(sql`CAST(${watchCatalog.diameter} AS DECIMAL) <= ${diameterMax}`);
   }
 
-  // If features are specified, we need to join with watchFeatures
-  let query_builder = db.select().from(watches);
-
-  if (features && features.length > 0) {
-    // Get watch IDs that have all specified features
-    const watchIdsWithFeatures = await db
-      .select({ watchId: watchFeatures.watchId })
-      .from(watchFeatures)
-      .where(inArray(watchFeatures.featureValue, features))
-      .groupBy(watchFeatures.watchId)
-      .having(sql`COUNT(DISTINCT ${watchFeatures.featureValue}) = ${features.length}`);
-
-    const watchIds = watchIdsWithFeatures.map(row => row.watchId);
-    
-    if (watchIds.length === 0) {
-      return { watches: [], total: 0 };
-    }
-
-    conditions.push(inArray(watches.id, watchIds));
-  }
+  let query_builder = db.select().from(watchCatalog);
 
   // Apply WHERE conditions
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
@@ -188,7 +170,7 @@ export async function searchWatches(params: WatchSearchParams) {
   // Get total count
   const countResult = await db
     .select({ count: sql<number>`COUNT(*)` })
-    .from(watches)
+    .from(watchCatalog)
     .where(whereClause);
 
   const total = Number(countResult[0]?.count || 0);
@@ -197,22 +179,22 @@ export async function searchWatches(params: WatchSearchParams) {
   let orderByClause;
   switch (sortBy) {
     case 'brand':
-      orderByClause = sortOrder === 'asc' ? asc(watches.brand) : desc(watches.brand);
+      orderByClause = sortOrder === 'asc' ? asc(watchCatalog.brand) : desc(watchCatalog.brand);
       break;
     case 'diameter':
       orderByClause = sortOrder === 'asc' 
-        ? sql`CAST(${watches.caseDiameterMm} AS DECIMAL) ASC`
-        : sql`CAST(${watches.caseDiameterMm} AS DECIMAL) DESC`;
+        ? sql`CAST(${watchCatalog.diameter} AS DECIMAL) ASC`
+        : sql`CAST(${watchCatalog.diameter} AS DECIMAL) DESC`;
       break;
     case 'name':
     default:
-      orderByClause = sortOrder === 'asc' ? asc(watches.name) : desc(watches.name);
+      orderByClause = sortOrder === 'asc' ? asc(watchCatalog.name) : desc(watchCatalog.name);
   }
 
   // Execute query
   const results = await db
     .select()
-    .from(watches)
+    .from(watchCatalog)
     .where(whereClause)
     .orderBy(orderByClause)
     .limit(limit)
@@ -232,34 +214,20 @@ export async function getWatchById(id: number) {
     throw new Error("Database not available");
   }
 
-  const result = await db.select().from(watches).where(eq(watches.id, id)).limit(1);
+  const result = await db.select().from(watchCatalog).where(eq(watchCatalog.id, id)).limit(1);
   return result[0] || null;
 }
 
 export async function getWatchFeatures(watchId: number) {
-  const db = await getDb();
-  if (!db) {
-    throw new Error("Database not available");
-  }
-
-  return await db
-    .select()
-    .from(watchFeatures)
-    .where(eq(watchFeatures.watchId, watchId));
+  // watchFeatures表不存在，返回空数组
+  console.warn("[Database] getWatchFeatures: watchFeatures table does not exist");
+  return [];
 }
 
 export async function getWatchPriceHistory(watchId: number, limit = 100) {
-  const db = await getDb();
-  if (!db) {
-    throw new Error("Database not available");
-  }
-
-  return await db
-    .select()
-    .from(marketPrices)
-    .where(eq(marketPrices.watchId, watchId))
-    .orderBy(desc(marketPrices.recordedAt))
-    .limit(limit);
+  // marketPrices表不存在，返回空数组
+  console.warn("[Database] getWatchPriceHistory: marketPrices table does not exist");
+  return [];
 }
 
 // Get unique values for filters
@@ -270,10 +238,10 @@ export async function getBrands() {
   }
 
   const results = await db
-    .selectDistinct({ brand: watches.brand })
-    .from(watches)
-    .where(sql`${watches.brand} IS NOT NULL AND ${watches.brand} != ''`)
-    .orderBy(asc(watches.brand));
+    .selectDistinct({ brand: watchCatalog.brand })
+    .from(watchCatalog)
+    .where(sql`${watchCatalog.brand} IS NOT NULL AND ${watchCatalog.brand} != ''`)
+    .orderBy(asc(watchCatalog.brand));
 
   return results.map(r => r.brand).filter(b => b && b.trim().length > 0);
 }
@@ -285,10 +253,10 @@ export async function getCaseMaterials() {
   }
 
   const results = await db
-    .selectDistinct({ material: watches.caseMaterial })
-    .from(watches)
-    .where(sql`${watches.caseMaterial} IS NOT NULL AND ${watches.caseMaterial} != ''`)
-    .orderBy(asc(watches.caseMaterial));
+    .selectDistinct({ material: watchCatalog.case_material })
+    .from(watchCatalog)
+    .where(sql`${watchCatalog.case_material} IS NOT NULL AND ${watchCatalog.case_material} != ''`)
+    .orderBy(asc(watchCatalog.case_material));
 
   return results.map(r => r.material).filter(m => m && m.trim().length > 0);
 }
@@ -300,10 +268,10 @@ export async function getMovementTypes() {
   }
 
   const results = await db
-    .selectDistinct({ type: watches.movementType })
-    .from(watches)
-    .where(sql`${watches.movementType} IS NOT NULL AND ${watches.movementType} != ''`)
-    .orderBy(asc(watches.movementType));
+    .selectDistinct({ type: watchCatalog.movement_caliber })
+    .from(watchCatalog)
+    .where(sql`${watchCatalog.movement_caliber} IS NOT NULL AND ${watchCatalog.movement_caliber} != ''`)
+    .orderBy(asc(watchCatalog.movement_caliber));
 
   return results.map(r => r.type).filter(t => t && t.trim().length > 0);
 }
@@ -337,23 +305,9 @@ export async function removeFromWatchlist(userId: string, watchId: number) {
 }
 
 export async function getUserWatchlist(userId: string) {
-  const db = await getDb();
-  if (!db) {
-    throw new Error("Database not available");
-  }
-
-  const results = await db
-    .select({
-      watch: watches,
-      notes: userWatchlist.notes,
-      addedAt: userWatchlist.createdAt
-    })
-    .from(userWatchlist)
-    .innerJoin(watches, eq(userWatchlist.watchId, watches.id))
-    .where(eq(userWatchlist.userId, userId))
-    .orderBy(desc(userWatchlist.createdAt));
-
-  return results;
+  // 用户收藏列表功能暂时不可用，因为userWatchlist表不存在
+  console.warn("[Database] getUserWatchlist: userWatchlist table does not exist");
+  return [];
 }
 
 // Database statistics
@@ -363,16 +317,14 @@ export async function getDbStats() {
     throw new Error("Database not available");
   }
 
-  const [watchCount] = await db.select({ count: sql<number>`COUNT(*)` }).from(watches);
-  const [featureCount] = await db.select({ count: sql<number>`COUNT(*)` }).from(watchFeatures);
-  const [priceCount] = await db.select({ count: sql<number>`COUNT(*)` }).from(marketPrices);
-  const [brandCount] = await db.select({ count: sql<number>`COUNT(DISTINCT brand)` }).from(watches);
+  const [watchCount] = await db.select({ count: sql<number>`COUNT(*)` }).from(watchCatalog);
+  const [brandCount] = await db.select({ count: sql<number>`COUNT(DISTINCT brand)` }).from(watchCatalog);
 
   return {
     totalWatches: Number(watchCount.count),
-    totalFeatures: Number(featureCount.count),
-    totalPriceRecords: Number(priceCount.count),
-    totalBrands: Number(brandCount.count)
+    totalBrands: Number(brandCount.count),
+    totalFeatures: 0, // watchFeatures表不存在，返回默认值
+    totalPriceRecords: 0 // marketPrices表不存在，返回默认值
   };
 }
 

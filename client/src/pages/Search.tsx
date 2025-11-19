@@ -6,8 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search as SearchIcon, Filter, X } from "lucide-react";
+import { Search as SearchIcon, Filter, X, Star, Heart } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import WatchImage from "@/components/WatchImage";
 
 export default function Search() {
   const [query, setQuery] = useState("");
@@ -192,21 +193,13 @@ export default function Search() {
                   {searchResults.watches.map((watch) => (
                     <Link key={watch.id} href={`/watch/${watch.id}`}>
                       <Card className="group hover:shadow-xl transition-all duration-300 cursor-pointer h-full overflow-hidden border-0 shadow-md">
-                        {/* 手表图片 */}
-                        <div className="aspect-square bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 relative overflow-hidden">
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="text-center space-y-3 p-6">
-                              <div className="text-4xl font-bold text-slate-300 dark:text-slate-600">
-                                {watch.brand?.charAt(0) || 'W'}
-                              </div>
-                              <div className="text-sm font-medium text-slate-400 dark:text-slate-500">
-                                {watch.brand || 'Watch'}
-                              </div>
-                            </div>
-                          </div>
-                          {/* 悬停效果 */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
+                        {/* 手表图片 - 使用独立的WatchImage组件 */}
+                        <WatchImage 
+                          watchId={watch.id}
+                          brand={watch.brand}
+                          name={watch.name}
+                          referenceNumber={watch.referenceNumber}
+                        />
                         
                         <CardHeader className="space-y-2">
                           <CardTitle className="text-lg line-clamp-2">
@@ -254,7 +247,7 @@ export default function Search() {
                         </CardContent>
                       </Card>
                     </Link>
-                  ))}
+                   ))}
                 </div>
 
                 {/* Pagination */}

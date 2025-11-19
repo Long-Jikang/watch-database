@@ -5,6 +5,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { apiRouter } from "./apiRouter";
 import * as db from "./db";
+import { ossService } from "./ossService";
 
 export const appRouter = router({
   system: systemRouter,
@@ -62,7 +63,8 @@ export const appRouter = router({
         watchId: z.number(),
       }))
       .query(async ({ input }) => {
-        return await db.getWatchFeatures(input.watchId);
+        // 由于数据库中没有watchFeatures表，返回空数组
+        return [];
       }),
 
     // Get watch with features (combined)
@@ -75,10 +77,10 @@ export const appRouter = router({
         if (!watch) {
           throw new Error("Watch not found");
         }
-        const features = await db.getWatchFeatures(input.id);
+        // 由于数据库中没有watchFeatures表，只返回手表基本信息
         return {
           watch,
-          features
+          features: [] // 返回空数组，因为features表不存在
         };
       }),
 
@@ -90,6 +92,46 @@ export const appRouter = router({
       }))
       .query(async ({ input }) => {
         return await db.getWatchPriceHistory(input.watchId, input.limit);
+      }),
+
+    // Get watch image URL
+    getImageUrl: publicProcedure
+      .input(z.object({
+        watchId: z.number(),
+      }))
+      .query(async ({ input }) => {
+        const watch = await db.getWatchById(input.watchId);
+        if (!watch) {
+          throw new Error("Watch not found");
+        }
+
+        // 如果file_name为空，返回默认图片URL
+        if (!watch.file_name || watch.file_name.trim() === '') {
+          return {
+            imageUrl: 'https://placehold.co/400x400?text=No+Image',
+            exists: false
+          };
+        }
+
+        // 生成图片路径：Watch/{品牌}/{系列}/{file_name}
+        const familyPath = watch.family ? `${watch.family}/` : '';
+        const imagePath = `Watch/${watch.brand}/${familyPath}${watch.file_name}`;
+
+        // 生成OSS签名URL
+        const signedUrl = await ossService.generateSignedUrl(imagePath);
+        
+        if (signedUrl) {
+          return {
+            imageUrl: signedUrl,
+            exists: true
+          };
+        } else {
+          // 如果生成签名URL失败，返回默认图片
+          return {
+            imageUrl: 'https://placehold.co/400x400?text=No+Image',
+            exists: false
+          };
+        }
       }),
   }),
 

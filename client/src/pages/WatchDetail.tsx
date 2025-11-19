@@ -14,10 +14,16 @@ export default function WatchDetail() {
   const watchId = params?.id ? parseInt(params.id) : 0;
   const { isAuthenticated } = useAuth();
 
-  const { data, isLoading } = trpc.watches.getWithFeatures.useQuery(
-    { id: watchId },
-    { enabled: watchId > 0 }
-  );
+  const { data, isLoading } = trpc.watches.getWithFeatures.useQuery({
+    id: watchId,
+  });
+
+  // 获取手表图片URL
+  const { data: imageData, isLoading: imageLoading } = trpc.watches.getImageUrl.useQuery({
+    watchId: watchId,
+  }, {
+    enabled: !!watchId, // 只有当watchId存在时才执行查询
+  });
 
   const addToWatchlistMutation = trpc.watchlist.add.useMutation();
 
@@ -115,21 +121,43 @@ export default function WatchDetail() {
           <div className="lg:col-span-1">
             <div className="sticky top-8">
               <div className="aspect-[4/5] bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 rounded-xl overflow-hidden shadow-xl border border-slate-200 dark:border-slate-700">
-                <div className="w-full h-full flex items-center justify-center">
-                  <div className="text-center space-y-4 p-8">
-                    <div className="text-6xl font-bold text-slate-200 dark:text-slate-700">
-                      {data.watch.brand?.charAt(0) || 'W'}
-                    </div>
-                    <div className="text-lg font-semibold text-slate-400 dark:text-slate-500">
-                      {data.watch.brand || 'Watch'}
-                    </div>
-                    {data.watch.referenceNumber && (
-                      <div className="text-xs text-slate-400 dark:text-slate-600 font-mono">
-                        {data.watch.referenceNumber}
+                {imageLoading ? (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <div className="text-center space-y-4 p-8">
+                      <div className="text-2xl font-bold text-slate-300 dark:text-slate-600">
+                        加载中...
                       </div>
-                    )}
+                    </div>
                   </div>
-                </div>
+                ) : imageData?.imageUrl ? (
+                  <img
+                    src={imageData.imageUrl}
+                    alt={`${watch.brand} ${watch.name || watch.reference}`}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // 图片加载失败时显示品牌首字母
+                      e.currentTarget.style.display = 'none';
+                      const fallback = e.currentTarget.parentElement?.querySelector('.image-fallback');
+                      if (fallback) fallback.style.display = 'flex';
+                    }}
+                  />
+                ) : (
+                  <div className="image-fallback w-full h-full flex items-center justify-center">
+                    <div className="text-center space-y-4 p-8">
+                      <div className="text-6xl font-bold text-slate-200 dark:text-slate-700">
+                        {watch.brand?.charAt(0) || 'W'}
+                      </div>
+                      <div className="text-lg font-semibold text-slate-400 dark:text-slate-500">
+                        {watch.brand || 'Watch'}
+                      </div>
+                      {watch.reference && (
+                        <div className="text-xs text-slate-400 dark:text-slate-600 font-mono">
+                          {watch.reference}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -174,6 +202,177 @@ export default function WatchDetail() {
                 <p className="text-lg text-muted-foreground">系列: {watch.family}</p>
               )}
             </div>
+
+            {/* 手表规格信息 */}
+            <Card>
+              <CardHeader>
+                <CardTitle>手表规格</CardTitle>
+                <CardDescription>详细技术参数</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* 基础信息 */}
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-sm text-muted-foreground">基础信息</h4>
+                    {watch.brand && (
+                      <div className="flex justify-between">
+                        <span className="text-sm">品牌</span>
+                        <span className="font-medium">{watch.brand}</span>
+                      </div>
+                    )}
+                    {watch.family && (
+                      <div className="flex justify-between">
+                        <span className="text-sm">系列</span>
+                        <span className="font-medium">{watch.family}</span>
+                      </div>
+                    )}
+                    {watch.name && (
+                      <div className="flex justify-between">
+                        <span className="text-sm">名称</span>
+                        <span className="font-medium">{watch.name}</span>
+                      </div>
+                    )}
+                    {watch.reference && (
+                      <div className="flex justify-between">
+                        <span className="text-sm">型号</span>
+                        <span className="font-medium font-mono">{watch.reference}</span>
+                      </div>
+                    )}
+                    {watch.limited && (
+                      <div className="flex justify-between">
+                        <span className="text-sm">限量版</span>
+                        <span className="font-medium">{watch.limited === 'Yes' ? '是' : watch.limited}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 机芯信息 */}
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-sm text-muted-foreground">机芯</h4>
+                    {watch.movement_caliber && (
+                      <div className="flex justify-between">
+                        <span className="text-sm">机芯型号</span>
+                        <span className="font-medium">{watch.movement_caliber}</span>
+                      </div>
+                    )}
+                    {watch.movement_functions && (
+                      <div className="flex justify-between">
+                        <span className="text-sm">功能</span>
+                        <span className="font-medium text-right">{watch.movement_functions}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 表壳信息 */}
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-sm text-muted-foreground">表壳</h4>
+                    {watch.case_material && (
+                      <div className="flex justify-between">
+                        <span className="text-sm">材质</span>
+                        <span className="font-medium">{watch.case_material}</span>
+                      </div>
+                    )}
+                    {watch.shape && (
+                      <div className="flex justify-between">
+                        <span className="text-sm">形状</span>
+                        <span className="font-medium">{watch.shape}</span>
+                      </div>
+                    )}
+                    {watch.diameter && (
+                      <div className="flex justify-between">
+                        <span className="text-sm">直径</span>
+                        <span className="font-medium">{watch.diameter}</span>
+                      </div>
+                    )}
+                    {watch.height && watch.height !== 'Bilgi Yok' && (
+                      <div className="flex justify-between">
+                        <span className="text-sm">高度</span>
+                        <span className="font-medium">{watch.height}</span>
+                      </div>
+                    )}
+                    {watch.wr && (
+                      <div className="flex justify-between">
+                        <span className="text-sm">防水深度</span>
+                        <span className="font-medium">{watch.wr}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 其他规格 */}
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-sm text-muted-foreground">其他规格</h4>
+                    {watch.glass && (
+                      <div className="flex justify-between">
+                        <span className="text-sm">表镜</span>
+                        <span className="font-medium">{watch.glass}</span>
+                      </div>
+                    )}
+                    {watch.back && (
+                      <div className="flex justify-between">
+                        <span className="text-sm">表背</span>
+                        <span className="font-medium">{watch.back}</span>
+                      </div>
+                    )}
+                    {watch.dial_color && (
+                      <div className="flex justify-between">
+                        <span className="text-sm">表盘颜色</span>
+                        <span className="font-medium">{watch.dial_color}</span>
+                      </div>
+                    )}
+                    {watch.indexes && (
+                      <div className="flex justify-between">
+                        <span className="text-sm">时标</span>
+                        <span className="font-medium">{watch.indexes}</span>
+                      </div>
+                    )}
+                    {watch.hands && (
+                      <div className="flex justify-between">
+                        <span className="text-sm">指针</span>
+                        <span className="font-medium">{watch.hands}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* 价格信息 */}
+            {(watch.price_cny || watch.price_usd || watch.price_hkd || watch.price_sgd) && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>价格信息</CardTitle>
+                  <CardDescription>市场参考价格</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {watch.price_cny && (
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-primary">¥{watch.price_cny.toLocaleString()}</div>
+                        <div className="text-xs text-muted-foreground">人民币</div>
+                      </div>
+                    )}
+                    {watch.price_hkd && (
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-primary">HK${watch.price_hkd.toLocaleString()}</div>
+                        <div className="text-xs text-muted-foreground">港币</div>
+                      </div>
+                    )}
+                    {watch.price_usd && (
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-primary">${watch.price_usd.toLocaleString()}</div>
+                        <div className="text-xs text-muted-foreground">美元</div>
+                      </div>
+                    )}
+                    {watch.price_sgd && (
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-primary">S${watch.price_sgd.toLocaleString()}</div>
+                        <div className="text-xs text-muted-foreground">新加坡元</div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Description */}
             {watch.description && (

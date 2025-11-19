@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Crown, TrendingUp } from "lucide-react";
+import { Link } from "wouter";
 
 // 顶级品牌经典型号数据
 const luxuryWatches = [
@@ -181,7 +182,8 @@ export default function LuxuryWatches() {
         <h2 className="text-3xl font-bold text-center mb-8">经典表款</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {luxuryWatches.map((watch) => (
-            <Card key={watch.id} className="overflow-hidden hover:shadow-xl transition-shadow">
+            <Link key={watch.id} href={`/watch/${watch.id}`}>
+              <Card className="overflow-hidden hover:shadow-xl transition-shadow cursor-pointer">
               <div className="aspect-square bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-8">
                 <img
                   src={watch.imageUrl}
@@ -214,7 +216,8 @@ export default function LuxuryWatches() {
                   </div>
                 </div>
               </CardContent>
-            </Card>
+              </Card>
+            </Link>
           ))}
         </div>
       </section>

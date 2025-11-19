@@ -21,7 +21,7 @@ export default function Home() {
             Watch Database & Market Tracker
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            探索超过 {stats?.totalWatches.toLocaleString() || "40,000"} 款手表的详细规格数据，追踪市场行情，发现您的下一块腕表
+            探索超过 {(stats?.totalWatches || 9362).toLocaleString()} 款手表的详细规格数据，追踪市场行情，发现您的下一块腕表
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/search">
@@ -57,7 +57,7 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">
-                {isLoading ? "..." : stats?.totalWatches.toLocaleString()}
+                {isLoading ? "..." : (stats?.totalWatches || 0).toLocaleString()}
               </div>
             </CardContent>
           </Card>
@@ -70,7 +70,7 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">
-                {isLoading ? "..." : stats?.totalBrands.toLocaleString()}
+                {isLoading ? "..." : (stats?.totalBrands || 0).toLocaleString()}
               </div>
             </CardContent>
           </Card>
@@ -83,7 +83,7 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">
-                {isLoading ? "..." : stats?.totalFeatures.toLocaleString()}
+                {isLoading ? "..." : (stats?.totalFeatures || 0).toLocaleString()}
               </div>
             </CardContent>
           </Card>
@@ -96,7 +96,7 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">
-                {isLoading ? "..." : stats?.totalPriceRecords.toLocaleString()}
+                {isLoading ? "..." : (stats?.totalPriceRecords || 0).toLocaleString()}
               </div>
             </CardContent>
           </Card>
